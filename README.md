@@ -77,6 +77,13 @@ Monsoon `mix-blend-mode: color` wash — so a mixed-source set reads as one pale
   projects on the real site and would need their own pages.
 - **"Download Brochure"** has no file behind it.
 
+## Live
+
+- **GitHub Pages** — https://bewdoo.github.io/graama-site/ (this repo, `main` branch, root)
+- **Artifact** — https://claude.ai/code/artifact/986e3767-af6d-480f-ae2d-dc90e80d7eec (private until shared)
+
+Pages redeploys on every push to `main`; it takes about a minute.
+
 ## Publishing a shareable single file
 
 `build-artifact.py` bundles the whole site into one self-contained HTML file at
@@ -94,9 +101,14 @@ Three things it handles that a naive inliner does not:
   `₹3 Cr` survives rather than arriving as `â‚¹3 Cr`.
 - **Weight.** The two MP4s are re-encoded smaller for the bundle (hero 1.5 MB → 376 KB)
   so the single file lands at 2.7 MB instead of ~7 MB after base64.
-- **Attribution.** It injects a fixed concept notice stating the page is an independent
-  design concept, unaffiliated with Vedic City, with an inactive form.
+## The concept notice
 
-Published at: https://claude.ai/code/artifact/986e3767-af6d-480f-ae2d-dc90e80d7eec
-(private until shared from the page's share menu). Re-run the build and republish the
-same path to update that URL.
+Every published copy carries a fixed bar reading *"Independent design concept. Not
+affiliated with, authorised by, or endorsed by Vedic City."* It lives in the source
+(`.concept-note` in `index.html`, section 24 of `styles.css`), not in the build step,
+so it cannot go missing from one deployment target and not another.
+
+The page uses Vedic City's name, mark, photography and real phone numbers. On a public,
+indexable URL that would otherwise read as their official site rather than as a concept.
+If the client signs off on it, removing the `<div class="concept-note">` and the section-24
+block is all it takes.
