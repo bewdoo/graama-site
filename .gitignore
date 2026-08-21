@@ -1,0 +1,4 @@
+# build output — regenerate with: python3 build-artifact.py
+.build/
+
+.DS_Store
