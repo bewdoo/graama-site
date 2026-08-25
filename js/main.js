@@ -259,31 +259,11 @@
       });
     });
 
-    /* the info card that reports whatever is hovered */
-    var card = document.createElement('div');
-    card.className = 'plan-card';
-    card.innerHTML = '<span class="pc-tag"></span><b class="pc-name"></b>' +
-                     '<dl class="pc-facts"></dl><p class="pc-note"></p>';
-    stage.appendChild(card);
+    var card = $('#planDetail');
+    var IDLE = { tag: 'The plan', name: 'Seventeen units',
+                 note: 'Hover a block or an amenity \u2014 on the plan or in the list below \u2014 to trace it and read its detail here.' };
 
-    function centroid(pts) {
-      var p = pts.split(' ').map(function (q) { return q.split(',').map(Number); });
-      var x = 0, y = 0;
-      p.forEach(function (q) { x += q[0]; y += q[1]; });
-      return [x / p.length, y / p.length];
-    }
-
-    var current = null;
-    function focus(id) {
-      if (current === id) return;
-      blur();
-      current = id;
-      var rec = byId[id]; if (!rec) return;
-      var u = rec.unit;
-      rec.g.classList.add('on');
-      rec.li.classList.add('on');
-      stage.classList.add('focus');
-
+    function render(u) {
       card.querySelector('.pc-tag').textContent = u.tag;
       card.querySelector('.pc-name').textContent = u.name;
       var dl = card.querySelector('.pc-facts');
@@ -297,14 +277,20 @@
         });
       }
       card.querySelector('.pc-note').textContent = u.note;
+    }
 
-      /* sit the card beside the unit, flipping so it never leaves the stage */
-      var c = centroid(u.pts);
-      card.classList.toggle('flip-x', c[0] > 55);
-      card.classList.toggle('flip-y', c[1] > 68);
-      // keep a centred card clear of the stage edges
-      card.style.left = clamp(c[0], 6, 94) + '%';
-      card.style.top = clamp(c[1], 22, 90) + '%';
+    var current = null;
+    function focus(id) {
+      if (current === id) return;
+      blur();
+      current = id;
+      var rec = byId[id]; if (!rec) return;
+      var u = rec.unit;
+      rec.g.classList.add('on');
+      rec.li.classList.add('on');
+      stage.classList.add('focus');
+
+      render(u);
       card.classList.add('on');
 
       cap.innerHTML = '<b></b><span></span>';
@@ -318,7 +304,8 @@
       current = null;
       stage.classList.remove('focus');
       card.classList.remove('on');
-      cap.innerHTML = '<b>Hover a unit</b><span>to trace it on the plan</span>';
+      render(IDLE);
+      cap.innerHTML = '<b>Graama</b><span>75 plots \u00b7 15 acres \u00b7 North Goa</span>';
     }
     hit.addEventListener('mouseleave', blur);
 
@@ -377,6 +364,8 @@
     ['pointerup', 'pointercancel'].forEach(function (ev) {
       canvas.addEventListener(ev, function () { down = false; canvas.classList.remove('dragging'); });
     });
+    render(IDLE);
+    cap.innerHTML = '<b>Graama</b><span>75 plots \u00b7 15 acres \u00b7 North Goa</span>';
     apply();
   })();
 

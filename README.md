@@ -56,7 +56,8 @@ The logo is never filtered. `assets/vc-logo-{brown,beige,blue}.svg` are recolour
    17 traced units — ten residential blocks plus the Park, Water Park, Clubhouse,
    High Street Retail, entry gate and both plazas. Hovering a unit (on the plan or in the
    side list) dims the rest, washes it in Vedic City Blue, traces its outline on and
-   opens an info card with the plot count, size range and plot numbers.
+   fills the detail panel beside the plan with the plot count, size range and plot
+   numbers. The detail sits outside the image, so nothing is ever covered.
    Zoom with + / &minus; or double-click, then drag to pan; every plot number and area is
    printed on the plan itself. Block polygons in `js/plan-units.js` are fitted to the
    plot labels detected in the render, so they sit on the real block boundaries;
