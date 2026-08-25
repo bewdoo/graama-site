@@ -210,177 +210,134 @@
     nodes.forEach(function (n) { io.observe(n); });
   })();
 
-  /* ---------- 9. Master plan — generated + interactive ---------- */
+  /* ---------- 9. Master plan — the real blueprint, unit by unit ---------- */
   (function masterplan() {
-    var svg = $('#planSvg'), stage = $('#planStage'), tip = $('#planTip');
-    if (!svg) return;
+    var stage = $('#planStage'), canvas = $('#planCanvas'), hit = $('#planHit'),
+        cap = $('#planCap'), list = $('#planList'), zl = $('#zoomLevel');
+    if (!stage || !hit || typeof GRAAMA_UNITS === 'undefined') return;
     var NS = 'http://www.w3.org/2000/svg';
-    var W = 1200, H = 675;
 
-    // deterministic pseudo-random so the plan looks the same every load
-    var seed = 20260821;
-    function rnd() { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; }
-    function mk(tag, attrs) {
-      var n = document.createElementNS(NS, tag);
-      for (var k in attrs) n.setAttribute(k, attrs[k]);
-      return n;
-    }
+    /* -- build one <g> per traced unit, plus its row in the side list -- */
+    var byId = {};
+    GRAAMA_UNITS.forEach(function (u) {
+      var g = document.createElementNS(NS, 'g');
+      g.setAttribute('class', 'unit');
+      g.setAttribute('data-kind', u.kind);
+      g.setAttribute('data-id', u.id);
 
-    var gLand = mk('g', {}), gPlots = mk('g', {}), gLines = mk('g', {}), gLabels = mk('g', {});
-    var SITE = 'M60 90 C 300 40 620 62 900 84 C 1080 98 1150 170 1140 300 C 1130 452 1080 570 900 600 C 640 644 320 630 140 574 C 52 546 40 430 52 300 C 60 202 50 118 60 90 Z';
+      var fill = document.createElementNS(NS, 'polygon');
+      fill.setAttribute('points', u.pts);
+      fill.setAttribute('class', 'fill');
 
-    // clip everything to the site so no line strays off the parcel
-    var defs = mk('defs', {});
-    var clip = mk('clipPath', { id: 'siteClip' });
-    clip.appendChild(mk('path', { d: SITE }));
-    defs.appendChild(clip);
-    svg.appendChild(defs);
-    gLines.setAttribute('clip-path', 'url(#siteClip)');
-    gPlots.setAttribute('clip-path', 'url(#siteClip)');
+      var edge = document.createElementNS(NS, 'polygon');
+      edge.setAttribute('points', u.pts);
+      edge.setAttribute('class', 'edge');
+      g.appendChild(fill); g.appendChild(edge);
+      hit.appendChild(g);
 
-    // site boundary
-    gLand.appendChild(mk('path', { d: SITE, fill: 'rgba(58,78,50,.42)', stroke: 'rgba(224,212,188,.34)', 'stroke-width': 1.6 }));
+      var li = document.createElement('li');
+      li.innerHTML = '<b></b><span></span>';
+      li.querySelector('b').textContent = u.name;
+      li.querySelector('span').textContent = u.meta;
+      list.appendChild(li);
 
-    // cultural green at the heart
-    gLand.appendChild(mk('circle', { cx: 600, cy: 336, r: 112, fill: '#B8862A', opacity: '.30' }));
-    gLand.appendChild(mk('circle', { cx: 600, cy: 336, r: 74, fill: '#B8862A', opacity: '.55' }));
-    gLand.appendChild(mk('circle', { cx: 600, cy: 336, r: 30, fill: '#A4451F' }));
+      byId[u.id] = { unit: u, g: g, edge: edge, li: li };
 
-    // eight lanes radiating from the green — each bows a little, the way a
-    // walked path does, rather than running dead straight
-    var LANES = 8, laneA = [];
-    for (var li = 0; li < LANES; li++) {
-      var la = (li / LANES) * Math.PI * 2 + Math.PI / LANES;
-      laneA.push(la);
-      var ex = 600 + Math.cos(la) * 620, ey = 336 + Math.sin(la) * 360;
-      var bow = (rnd() - 0.5) * 90;                       // perpendicular sag
-      var mxp = (600 + ex) / 2 - Math.sin(la) * bow;
-      var myp = (336 + ey) / 2 + Math.cos(la) * bow;
-      var p = mk('path', {
-        d: 'M600 336 Q' + mxp.toFixed(0) + ' ' + myp.toFixed(0) + ' ' + ex.toFixed(0) + ' ' + ey.toFixed(0),
-        stroke: 'rgba(224,212,188,.34)', 'stroke-width': 2.6, fill: 'none', 'stroke-linecap': 'round'
+      [g, li].forEach(function (el) {
+        el.addEventListener('mouseenter', function () { focus(u.id); });
+        el.addEventListener('mouseleave', blur);
       });
-      p.style.strokeDasharray = 800;
-      p.style.strokeDashoffset = REDUCED ? 0 : 800;
-      p.style.transition = 'stroke-dashoffset 1.6s cubic-bezier(.16,.84,.30,1) ' + (0.15 + li * 0.07) + 's';
-      gLines.appendChild(p);
-    }
-
-    // perimeter road — a hand-walked loop, not a drafted ellipse
-    var ptsR = [], N = 22;
-    for (var ri2 = 0; ri2 < N; ri2++) {
-      var ra = (ri2 / N) * Math.PI * 2;
-      var jitter = 1 + (rnd() - 0.5) * 0.075;
-      ptsR.push([600 + Math.cos(ra) * 452 * jitter, 336 + Math.sin(ra) * 262 * jitter]);
-    }
-    var dRing = 'M' + ptsR[0][0].toFixed(1) + ' ' + ptsR[0][1].toFixed(1);
-    for (var k = 0; k < N; k++) {
-      var cur = ptsR[k], nx = ptsR[(k + 1) % N];
-      dRing += ' Q' + cur[0].toFixed(1) + ' ' + cur[1].toFixed(1) + ' ' +
-               ((cur[0] + nx[0]) / 2).toFixed(1) + ' ' + ((cur[1] + nx[1]) / 2).toFixed(1);
-    }
-    gLines.appendChild(mk('path', {
-      d: dRing + 'Z', fill: 'none', stroke: 'rgba(224,212,188,.28)',
-      'stroke-width': 2.6, 'stroke-dasharray': '15 11', 'stroke-linecap': 'round'
-    }));
-
-    // shared landscape belt between the inner and outer precincts
-    var belt = mk('ellipse', { cx: 600, cy: 336, rx: 300, ry: 176, fill: 'none', stroke: '#3A4E32', 'stroke-width': 34, opacity: '.55' });
-    belt.setAttribute('clip-path', 'url(#siteClip)');
-    gLand.appendChild(belt);
-
-    // plots are held back from the lanes so the streets stay legible
-    // instead of being paved over by parcels
-    function nearLane(a) {
-      for (var i = 0; i < laneA.length; i++) {
-        var d = Math.abs(Math.atan2(Math.sin(a - laneA[i]), Math.cos(a - laneA[i])));
-        if (d < 0.075) return true;
-      }
-      return false;
-    }
-
-    // plots — parcels ringing the cultural green, broken by the lanes
-    var names = ['Grove', 'Courtyard', 'Orchard', 'Banyan', 'Terrace', 'Well', 'Kalash', 'Verandah'];
-    var rings = [
-      { r: 158, n: 18, w: 42, h: 28 },
-      { r: 224, n: 24, w: 46, h: 30 },
-      { r: 300, n: 30, w: 48, h: 32 },
-      { r: 372, n: 34, w: 50, h: 32 }
-    ];
-    var idx = 0, plots = [];
-    rings.forEach(function (ring, ri) {
-      for (var i = 0; i < ring.n; i++) {
-        var a = (i / ring.n) * Math.PI * 2 + ri * 0.14;
-        if (nearLane(a)) continue;
-        var rr = ring.r + (rnd() - 0.5) * 20;
-        var cx = 600 + Math.cos(a) * rr * 1.16;
-        var cy = 336 + Math.sin(a) * rr * 0.70;
-        if (cx < 110 || cx > 1100 || cy < 76 || cy > 596) continue;
-        idx++;
-        var isAmenity = (idx % 13 === 0);
-        var w = ring.w * (0.84 + rnd() * 0.34);
-        var hh = ring.h * (0.86 + rnd() * 0.3);
-        var rect = mk('rect', {
-          x: (cx - w / 2).toFixed(1), y: (cy - hh / 2).toFixed(1),
-          width: w.toFixed(1), height: hh.toFixed(1), rx: 3.5,
-          transform: 'rotate(' + (a * 180 / Math.PI + 90).toFixed(1) + ' ' + cx.toFixed(1) + ' ' + cy.toFixed(1) + ')',
-          fill: isAmenity ? '#A4451F' : '#E0D4BC',
-          opacity: 0
-        });
-        rect.dataset.rest = isAmenity ? 1 : (0.78 + rnd() * 0.18).toFixed(2);
-        rect.setAttribute('class', 'plot');
-        rect.setAttribute('data-label', isAmenity ? 'Amenity · ' + names[idx % names.length] : 'Plot ' + String(idx).padStart(3, '0'));
-        rect.setAttribute('data-cx', cx.toFixed(1));
-        rect.setAttribute('data-cy', cy.toFixed(1));
-        gPlots.appendChild(rect);
-        plots.push(rect);
-      }
+      li.addEventListener('click', function () { focus(u.id); });
     });
 
-    // annotations — kept to the margins so nothing sits on the drawing
-    var acr = mk('text', { x: 86, y: 640, fill: 'rgba(224,212,188,.5)', 'font-family': 'Jost, sans-serif', 'font-size': 13, 'letter-spacing': 2 });
-    acr.textContent = '15 CURATED ACRES · INDICATIVE LAYOUT';
-    gLabels.appendChild(acr);
-    var cnt = mk('text', { x: 1114, y: 640, 'text-anchor': 'end', fill: 'rgba(224,212,188,.5)', 'font-family': 'Jost, sans-serif', 'font-size': 13, 'letter-spacing': 2 });
-    cnt.textContent = plots.length + ' PARCELS SHOWN';
-    gLabels.appendChild(cnt);
-
-    svg.appendChild(gLand); svg.appendChild(gLines); svg.appendChild(gPlots); svg.appendChild(gLabels);
-
-    // animate plots in when the section enters
-    function drawIn() {
-      $$('path', gLines).forEach(function (p) { p.style.strokeDashoffset = 0; });
-      plots.forEach(function (p, i) {
-        if (REDUCED) { p.setAttribute('opacity', p.dataset.rest); return; }
-        setTimeout(function () {
-          p.style.transition = 'opacity .75s ease, transform .75s cubic-bezier(.16,.84,.30,1)';
-          p.setAttribute('opacity', p.dataset.rest);
-        }, 380 + i * 16);
+    /* the outline draws itself on, so each edge needs its own length */
+    requestAnimationFrame(function () {
+      Object.keys(byId).forEach(function (k) {
+        var e = byId[k].edge;
+        var len = e.getTotalLength ? e.getTotalLength() : 200;
+        e.style.setProperty('--len', len);   // CSS owns dasharray/offset so .on can win
       });
-    }
-    if ('IntersectionObserver' in window) {
-      var io = new IntersectionObserver(function (es) {
-        es.forEach(function (e) { if (e.isIntersecting) { drawIn(); io.disconnect(); } });
-      }, { threshold: 0.2 });
-      io.observe(stage);
-    } else { drawIn(); }
+    });
 
-    // hover tooltip
-    gPlots.addEventListener('mouseover', function (e) {
-      var t = e.target;
-      if (!t.classList || !t.classList.contains('plot')) return;
-      stage.classList.add('dim');
-      tip.textContent = t.getAttribute('data-label');
-      var box = stage.getBoundingClientRect();
-      var sx = box.width / W, sy2 = box.height / H;
-      tip.style.left = (parseFloat(t.getAttribute('data-cx')) * sx) + 'px';
-      tip.style.top = (parseFloat(t.getAttribute('data-cy')) * sy2) + 'px';
-      tip.classList.add('on');
+    var current = null;
+    function focus(id) {
+      if (current === id) return;
+      blur();
+      current = id;
+      var rec = byId[id]; if (!rec) return;
+      rec.g.classList.add('on');
+      rec.li.classList.add('on');
+      stage.classList.add('focus');
+      cap.innerHTML = '<b></b><span></span>';
+      cap.querySelector('b').textContent = rec.unit.name;
+      cap.querySelector('span').textContent = rec.unit.meta + '  ·  ' + rec.unit.note;
+    }
+    function blur() {
+      if (!current) return;
+      var rec = byId[current];
+      if (rec) { rec.g.classList.remove('on'); rec.li.classList.remove('on'); }
+      current = null;
+      stage.classList.remove('focus');
+      cap.innerHTML = '<b>Hover a unit</b><span>to trace it on the plan</span>';
+    }
+    hit.addEventListener('mouseleave', blur);
+
+    /* -- zoom & pan, so the printed plot numbers stay readable -- */
+    var scale = 1, tx = 0, ty = 0, MIN = 1, MAX = 4.5;
+    function apply() {
+      var r = stage.getBoundingClientRect();
+      var lim = function (v, size) { return Math.min(0, Math.max(v, size - size * scale)); };
+      tx = lim(tx, r.width); ty = lim(ty, r.height);
+      canvas.style.transform = 'translate(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px) scale(' + scale.toFixed(3) + ')';
+      canvas.style.transformOrigin = '0 0';
+      if (zl) zl.textContent = scale.toFixed(1) + '\u00d7';
+    }
+    function zoomAt(factor, cx, cy) {
+      var next = clamp(scale * factor, MIN, MAX);
+      if (next === scale) return;
+      // keep the point under the cursor fixed
+      tx = cx - (cx - tx) * (next / scale);
+      ty = cy - (cy - ty) * (next / scale);
+      scale = next; apply();
+    }
+    // only pinch / ctrl+wheel zooms — a plain scroll must still move the page
+    stage.addEventListener('wheel', function (e) {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      e.preventDefault();
+      var r = stage.getBoundingClientRect();
+      zoomAt(e.deltaY < 0 ? 1.16 : 1 / 1.16, e.clientX - r.left, e.clientY - r.top);
+    }, { passive: false });
+
+    // double-click steps in, and again at the top to reset
+    stage.addEventListener('dblclick', function (e) {
+      var r = stage.getBoundingClientRect();
+      if (scale >= MAX - 0.01) { scale = 1; tx = ty = 0; apply(); return; }
+      zoomAt(1.8, e.clientX - r.left, e.clientY - r.top);
     });
-    gPlots.addEventListener('mouseout', function () {
-      stage.classList.remove('dim');
-      tip.classList.remove('on');
+
+    $('#zoomIn').addEventListener('click', function () {
+      var r = stage.getBoundingClientRect(); zoomAt(1.35, r.width / 2, r.height / 2);
     });
+    $('#zoomOut').addEventListener('click', function () {
+      var r = stage.getBoundingClientRect(); zoomAt(1 / 1.35, r.width / 2, r.height / 2);
+    });
+
+    var down = false, px = 0, py = 0;
+    canvas.addEventListener('pointerdown', function (e) {
+      if (scale <= 1) return;
+      down = true; px = e.clientX; py = e.clientY;
+      canvas.classList.add('dragging');
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', function (e) {
+      if (!down) return;
+      tx += e.clientX - px; ty += e.clientY - py;
+      px = e.clientX; py = e.clientY; apply();
+    });
+    ['pointerup', 'pointercancel'].forEach(function (ev) {
+      canvas.addEventListener(ev, function () { down = false; canvas.classList.remove('dragging'); });
+    });
+    apply();
   })();
 
   /* ---------- 10. Pinned horizontal pillars ---------- */

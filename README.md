@@ -17,18 +17,33 @@ graama-site/
 └─ assets/             # photography, film, brand mark
 ```
 
-## Palette
+## Brand system
 
-| Token | Hex | Role |
+Built to *Vedic City Branding Document 18.11.25*. The guidelines are explicit that
+unapproved colours must not appear, so the stylesheet uses only these and shades of them:
+
+| Hue | Hex | Role per the document |
 |---|---|---|
-| Laterite | `#A4451F` | primary — buttons, accents, the investment band |
-| Monsoon | `#23331F` | ground — hero, amenities, master plan, CTA |
-| Field ochre | `#B8862A` | accent — numerals, progress, mandala |
-| Limewash | `#EFE9DD` | paper — page background, text on dark |
-| Ink | `#16120E` | text, footer |
+| Vedic City Blue | `#ABDEE6` | **primary** — calm, balance, openness; backgrounds, highlights, accents |
+| Warm Beige | `#F4EFEB` | neutral base for layouts and backdrops |
+| Fresh Pistachio | `#EBE8C5` | supportive backgrounds, secondary highlights |
+| Earth Pistachio | `#BEC8AE` | muted variant, secondary layering |
+| Structured Brown | `#736357` | typography, outlines, grounding |
+| Accent terracotta | `#BE724E` | the fill shown on the document's own hues page |
 
-Type: **Fraunces** (display, variable — SOFT 28 / WONK 1) and **Jost** (UI), both from
-Google Fonts. Everything else is set in tokens at the top of `styles.css`.
+Type is **Outfit** throughout — the document names it the typeface for digital
+applications. Hierarchy comes from weight (200–500), not from a second family.
+
+`#736357` on `#F4EFEB` measures 4.71:1, so Structured Brown carries body text at AA.
+
+**Two notes on the source document.** Page 23 states Structured Brown as `#736357`,
+but the swatch beside it and the usage examples on page 25 render a terracotta —
+sampled at `#BE724E`. Both are in the stylesheet: the stated hex for typography, as
+written, and the sampled terracotta as an accent fill. Worth reconciling in the doc.
+The other four hues match their stated values to within a bit.
+
+The logo is never filtered. `assets/vc-logo-{brown,beige,blue}.svg` are recoloured by
+`fill`, because the guidelines forbid shadows, gradients, outlines or effects on it.
 
 ## Sections
 
@@ -37,9 +52,13 @@ Google Fonts. Everything else is set in tokens at the top of `styles.css`.
 3. **Chapter 03** — the positioning statement
 4. **Amenities** — six cards, line icons that draw themselves in on entry
 5. **Soulful Village Retreat** — the NA-approval badge and the fact table
-6. **Master Plan** — an SVG plan generated in JS: eight radiating lanes, a perimeter
-   road, a shared-landscape belt, and 80 hoverable parcels around the cultural green.
-   Deterministic (seeded PRNG), so it draws the same every load.
+6. **Master Plan** — the real GRAAMA blueprint render, with an interactive overlay.
+   16 traced units — nine residential blocks plus the Park, Water Park, Clubhouse,
+   High Street Retail, entry gate and both plazas. Hovering a unit (on the plan or in
+   the side list) dims the rest, washes it in Vedic City Blue and traces its outline on.
+   Zoom with + / &minus; or double-click, then drag to pan; every plot number and area is
+   printed on the plan itself. Unit polygons live in `js/plan-units.js` as percentages
+   of the image, traced from `GRAAMA BLUEPRINT 3.pdf`.
 7. **Pillars** — four cards on a horizontally-pinned track driven by scroll position
 8. **Location** — the real animated map, warm-graded onto the palette, plus distances
 9. **Growth corridor** — what's being built nearby, with count-up numerals

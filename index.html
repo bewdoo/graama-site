@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Graama — The Cultural Heartbeat of Vedic City | North Goa</title>
 <meta name="description" content="Graama is a boutique residential enclave across 15 curated acres in North Goa — where mindful community living, rooted simplicity and conscious choices nurture a life of meaning, purpose and belonging.">
-<meta name="theme-color" content="#23331F">
+<meta name="theme-color" content="#ABDEE6">
 <meta property="og:title" content="Graama — The Cultural Heartbeat of Vedic City">
 <meta property="og:description" content="A boutique residential enclave across 15 curated acres in North Goa. Starting from ₹3 Cr.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2323331F'/%3E%3Cpath d='M16 6 L25 26 H7 Z' fill='none' stroke='%23B8862A' stroke-width='2'/%3E%3Ccircle cx='16' cy='19' r='3.4' fill='%23A4451F'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ABDEE6'/%3E%3Cpath d='M16 8 L20 16 L16 24 L12 16 Z' fill='%23736357'/%3E%3Ccircle cx='16' cy='5' r='1.5' fill='%23736357'/%3E%3Ccircle cx='16' cy='27' r='1.5' fill='%23736357'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..700,0..100,0..1;1,9..144,300..700,0..100,0..1&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -94,7 +94,7 @@
         <li><div><b>24</b><span>Months to possession</span></div></li>
         <li><div><b>22 min</b><span>From Mopa airport</span></div></li>
       </ul>
-      <a class="btn btn--ochre" href="#enquire"><span class="dot"></span>Enquire Now</a>
+      <a class="btn btn--blue" href="#enquire"><span class="dot"></span>Enquire Now</a>
     </div>
   </div>
 
@@ -219,17 +219,31 @@
       <p class="lead reveal" style="--d:.14s">Graama brings community to life with shared greens, gathering spaces, cultural zones, and nature-woven plots — designed to nurture tradition, belonging, and purposeful living.</p>
     </div>
 
-    <div class="plan-stage" id="planStage">
-      <svg id="planSvg" viewBox="0 0 1200 675" role="img" aria-label="Stylised master plan of the Graama enclave"></svg>
-      <div class="plan-tip" id="planTip"></div>
-    </div>
+    <div class="plan-layout">
+      <figure class="plan-stage" id="planStage">
+        <div class="plan-canvas" id="planCanvas">
+          <img class="plan-img" id="planImg" src="assets/blueprint.jpg"
+               alt="Aerial master plan of Graama showing 132 plots, the park, water park, high street retail and clubhouse, with NH 66 along the western edge"
+               loading="lazy" decoding="async">
+          <svg class="plan-hit" id="planHit" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
+        </div>
+        <figcaption class="plan-cap" id="planCap">
+          <b>Hover a unit</b><span>to trace it on the plan</span>
+        </figcaption>
+        <div class="plan-zoom">
+          <button type="button" id="zoomOut" aria-label="Zoom out">&minus;</button>
+          <span id="zoomLevel">1.0&times;</span>
+          <button type="button" id="zoomIn" aria-label="Zoom in">+</button>
+        </div>
+      </figure>
 
-    <ul class="plan-legend reveal" style="--d:.1s">
-      <li><i style="background:#E0D4BC"></i>Residential plots</li>
-      <li><i style="background:#B8862A"></i>Cultural green</li>
-      <li><i style="background:#3A4E32"></i>Shared landscape</li>
-      <li><i style="background:#A4451F"></i>Clubhouse &amp; amenities</li>
-    </ul>
+      <aside class="plan-side">
+        <p class="label">The plan, unit by unit</p>
+        <ul class="plan-list" id="planList"></ul>
+        <div class="rule" style="margin-block:1.6em 1.2em"></div>
+        <p class="muted" style="font-size:.85rem">Use + / &minus; or double-click to zoom, then drag to pan. Every plot number and area is printed on the plan.</p>
+      </aside>
+    </div>
 
     <p class="muted reveal" style="--d:.16s;margin-top:clamp(30px,4vw,52px);max-width:70ch">The integration of sustainable tourism infrastructure, place-making initiatives, and responsible development practices significantly enhances site value — making it an attractive investment while preserving the region's ecological and cultural heritage.</p>
   </div>
@@ -411,7 +425,7 @@
       <span class="mask"><span class="it" style="--d:.08s">before it becomes a village.</span></span>
     </h2>
     <div class="cta-row">
-      <a class="btn btn--ochre" href="#enquire"><span class="dot"></span>Enquire Now</a>
+      <a class="btn btn--blue" href="#enquire"><span class="dot"></span>Enquire Now</a>
       <a class="btn btn--ghost" href="#enquire"><span class="dot"></span>Download Brochure</a>
     </div>
   </div>
@@ -503,6 +517,7 @@
   property of their respective owners. The enquiry form is inactive.
 </div>
 
+<script src="js/plan-units.js" defer></script>
 <script src="js/main.js" defer></script>
 </body>
 </html>
