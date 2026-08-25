@@ -53,12 +53,14 @@ The logo is never filtered. `assets/vc-logo-{brown,beige,blue}.svg` are recolour
 4. **Amenities** — six cards, line icons that draw themselves in on entry
 5. **Soulful Village Retreat** — the NA-approval badge and the fact table
 6. **Master Plan** — the real GRAAMA blueprint render, with an interactive overlay.
-   16 traced units — nine residential blocks plus the Park, Water Park, Clubhouse,
-   High Street Retail, entry gate and both plazas. Hovering a unit (on the plan or in
-   the side list) dims the rest, washes it in Vedic City Blue and traces its outline on.
+   17 traced units — ten residential blocks plus the Park, Water Park, Clubhouse,
+   High Street Retail, entry gate and both plazas. Hovering a unit (on the plan or in the
+   side list) dims the rest, washes it in Vedic City Blue, traces its outline on and
+   opens an info card with the plot count, size range and plot numbers.
    Zoom with + / &minus; or double-click, then drag to pan; every plot number and area is
-   printed on the plan itself. Unit polygons live in `js/plan-units.js` as percentages
-   of the image, traced from `GRAAMA BLUEPRINT 3.pdf`.
+   printed on the plan itself. Block polygons in `js/plan-units.js` are fitted to the
+   plot labels detected in the render, so they sit on the real block boundaries;
+   amenity zones are anchored to their text coordinates from the source PDF.
 7. **Pillars** — four cards on a horizontally-pinned track driven by scroll position
 8. **Location** — the real animated map, warm-graded onto the palette, plus distances
 9. **Growth corridor** — what's being built nearby, with count-up numerals

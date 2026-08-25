@@ -238,7 +238,7 @@
       var li = document.createElement('li');
       li.innerHTML = '<b></b><span></span>';
       li.querySelector('b').textContent = u.name;
-      li.querySelector('span').textContent = u.meta;
+      li.querySelector('span').textContent = u.count ? u.count + ' plots' : u.tag;
       list.appendChild(li);
 
       byId[u.id] = { unit: u, g: g, edge: edge, li: li };
@@ -259,18 +259,57 @@
       });
     });
 
+    /* the info card that reports whatever is hovered */
+    var card = document.createElement('div');
+    card.className = 'plan-card';
+    card.innerHTML = '<span class="pc-tag"></span><b class="pc-name"></b>' +
+                     '<dl class="pc-facts"></dl><p class="pc-note"></p>';
+    stage.appendChild(card);
+
+    function centroid(pts) {
+      var p = pts.split(' ').map(function (q) { return q.split(',').map(Number); });
+      var x = 0, y = 0;
+      p.forEach(function (q) { x += q[0]; y += q[1]; });
+      return [x / p.length, y / p.length];
+    }
+
     var current = null;
     function focus(id) {
       if (current === id) return;
       blur();
       current = id;
       var rec = byId[id]; if (!rec) return;
+      var u = rec.unit;
       rec.g.classList.add('on');
       rec.li.classList.add('on');
       stage.classList.add('focus');
+
+      card.querySelector('.pc-tag').textContent = u.tag;
+      card.querySelector('.pc-name').textContent = u.name;
+      var dl = card.querySelector('.pc-facts');
+      dl.innerHTML = '';
+      if (u.count) {
+        [['Plots', String(u.count)], ['Plot sizes', u.area], ['Numbers', u.plots]].forEach(function (row, i) {
+          var dt = document.createElement('dt'); dt.textContent = row[0];
+          var dd = document.createElement('dd'); dd.textContent = row[1];
+          if (i === 2) dd.className = 'pc-nums';
+          dl.appendChild(dt); dl.appendChild(dd);
+        });
+      }
+      card.querySelector('.pc-note').textContent = u.note;
+
+      /* sit the card beside the unit, flipping so it never leaves the stage */
+      var c = centroid(u.pts);
+      card.classList.toggle('flip-x', c[0] > 55);
+      card.classList.toggle('flip-y', c[1] > 68);
+      // keep a centred card clear of the stage edges
+      card.style.left = clamp(c[0], 6, 94) + '%';
+      card.style.top = clamp(c[1], 22, 90) + '%';
+      card.classList.add('on');
+
       cap.innerHTML = '<b></b><span></span>';
-      cap.querySelector('b').textContent = rec.unit.name;
-      cap.querySelector('span').textContent = rec.unit.meta + '  ·  ' + rec.unit.note;
+      cap.querySelector('b').textContent = u.name;
+      cap.querySelector('span').textContent = u.count ? (u.count + ' plots \u00b7 ' + u.area) : u.tag;
     }
     function blur() {
       if (!current) return;
@@ -278,6 +317,7 @@
       if (rec) { rec.g.classList.remove('on'); rec.li.classList.remove('on'); }
       current = null;
       stage.classList.remove('focus');
+      card.classList.remove('on');
       cap.innerHTML = '<b>Hover a unit</b><span>to trace it on the plan</span>';
     }
     hit.addEventListener('mouseleave', blur);
