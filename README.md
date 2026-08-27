@@ -67,7 +67,7 @@ The logo is never filtered. `assets/vc-logo-{brown,beige,blue}.svg` are recolour
 9. **Growth corridor** — what's being built nearby, with count-up numerals
 10. **Investment** — 25% / 24 months
 11. **Activities** — a staggered six-tile photo grid
-12. **CTA band** — a slowly rotating 24-petal mandala behind the closing line
+12. **CTA band** — the closing line, on a plain Structured Brown ground
 13. **Enquiry form** + footer
 
 ## Animation
@@ -105,6 +105,19 @@ Monsoon `mix-blend-mode: color` wash — so a mixed-source set reads as one pale
 - **Artifact** — https://claude.ai/code/artifact/986e3767-af6d-480f-ae2d-dc90e80d7eec (private until shared)
 
 Pages redeploys on every push to `main`; it takes about a minute.
+
+## Deploying
+
+Run `stamp-assets.py` before pushing. It rewrites the `css`/`js` links in
+`index.html` with a content hash, so a returning visitor never gets new HTML
+against a cached stylesheet — which GitHub Pages will otherwise serve.
+
+```bash
+python3 stamp-assets.py && git add -A && git commit && git push
+```
+
+`build-artifact.py` strips those stamps before inlining, since the bundle has no
+external files.
 
 ## Publishing a shareable single file
 

@@ -213,7 +213,9 @@
   /* ---------- 9. Master plan — the real blueprint, unit by unit ---------- */
   (function masterplan() {
     var stage = $('#planStage'), canvas = $('#planCanvas'), hit = $('#planHit'),
-        cap = $('#planCap'), list = $('#planList'), zl = $('#zoomLevel');
+        cap = $('#planCap'), list = $('#planList'), zl = $('#zoomLevel'),
+        side = $('#planDetail');
+    var touch = window.matchMedia('(hover: none)').matches;
     if (!stage || !hit || typeof GRAAMA_UNITS === 'undefined') return;
     var NS = 'http://www.w3.org/2000/svg';
 
@@ -245,9 +247,15 @@
 
       [g, li].forEach(function (el) {
         el.addEventListener('mouseenter', function () { focus(u.id); });
-        el.addEventListener('mouseleave', blur);
+        el.addEventListener('mouseleave', function () { if (!touch) blur(); });
+        // touch has no hover: tap to focus, tap again to release
+        el.addEventListener('click', function (e) {
+          e.preventDefault();
+          if (touch && current === u.id) { blur(); return; }
+          focus(u.id);
+          if (touch) side.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
       });
-      li.addEventListener('click', function () { focus(u.id); });
     });
 
     /* the outline draws itself on, so each edge needs its own length */
@@ -307,7 +315,7 @@
       render(IDLE);
       cap.innerHTML = '<b>Graama</b><span>75 plots \u00b7 15 acres \u00b7 North Goa</span>';
     }
-    hit.addEventListener('mouseleave', blur);
+    hit.addEventListener('mouseleave', function () { if (!touch) blur(); });
 
     /* -- zoom & pan, so the printed plot numbers stay readable -- */
     var scale = 1, tx = 0, ty = 0, MIN = 1, MAX = 4.5;
@@ -400,19 +408,6 @@
         count.textContent = String(n).padStart(2, '0') + ' / ' + String(cards.length).padStart(2, '0');
       }
     });
-  })();
-
-  /* ---------- 11. Mandala petals (CTA band) ---------- */
-  (function mandala() {
-    var g = $('#petals');
-    if (!g) return;
-    var NS = 'http://www.w3.org/2000/svg';
-    for (var i = 0; i < 24; i++) {
-      var p = document.createElementNS(NS, 'path');
-      p.setAttribute('d', 'M300 300 C 360 240 360 140 300 60 C 240 140 240 240 300 300 Z');
-      p.setAttribute('transform', 'rotate(' + (i * 15) + ' 300 300)');
-      g.appendChild(p);
-    }
   })();
 
   /* ---------- 12. Location list ⇄ map ---------- */

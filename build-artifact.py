@@ -61,6 +61,7 @@ def main():
         html = html.replace(rel, uri)
         css  = css.replace(rel, uri)
 
+    html = re.sub(r'(css/styles\.css|js/[a-z-]+\.js)\?v=[0-9a-f]+', r'\1', html)  # strip the ?v= stamp
     fonts = re.search(r'(<link href="https://fonts\.googleapis\.com[^>]*>)', html).group(1)
     body  = html.split('<body>', 1)[1].rsplit('</body>', 1)[0]
     body  = re.sub(r'<script src="js/main\.js" defer></script>', '', body).strip()

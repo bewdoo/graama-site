@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/styles.css?v=43f680b4">
 </head>
 <body>
 
@@ -247,7 +247,7 @@
         <p class="label">The plan, unit by unit</p>
         <ul class="plan-list" id="planList"></ul>
         <div class="rule" style="margin-block:1.6em 1.2em"></div>
-        <p class="muted" style="font-size:.85rem">Use + / &minus; or double-click to zoom, then drag to pan. Every plot number and area is printed on the plan.</p>
+        <p class="muted" style="font-size:.85rem"><span class="hint-hover">Hover a unit to trace it. Use + / &minus; or double-click to zoom, then drag to pan.</span><span class="hint-tap">Tap a unit to trace it. Pinch or use + / &minus; to zoom, then drag to pan.</span> Every plot number and area is printed on the plan.</p>
       </aside>
     </div>
 
@@ -420,10 +420,6 @@
 
 <!-- ══ BAND ══ -->
 <section class="section band on-dark tex" data-obs>
-  <svg class="mandala" viewBox="0 0 600 600" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1">
-    <g><circle cx="300" cy="300" r="290"/><circle cx="300" cy="300" r="235"/><circle cx="300" cy="300" r="180"/><circle cx="300" cy="300" r="120"/><circle cx="300" cy="300" r="60"/></g>
-    <g id="petals"></g>
-  </svg>
   <div class="wrap band-in">
     <p class="eyebrow eyebrow--center" style="color:var(--ochre-soft);justify-content:center"><span>Your sanctuary awaits</span></p>
     <h2 class="d2" style="margin-top:.7em">
@@ -483,7 +479,10 @@
   <div class="wrap">
     <div class="foot-top">
       <div>
-        <div class="foot-mark"><img class="mark" src="assets/vc-logo.svg" alt="" width="58" height="43">Graama<small>Vedic City · North Goa</small></div>
+        <div class="foot-mark">
+          <img class="graama-lockup" src="assets/graama-mark.png" alt="Graama — Vedic City" width="455" height="461" loading="lazy" decoding="async">
+          <small>North Goa · Est. 2005</small>
+        </div>
       </div>
       <div>
         <h5>Sitemap</h5>
@@ -523,7 +522,7 @@
   property of their respective owners. The enquiry form is inactive.
 </div>
 
-<script src="js/plan-units.js" defer></script>
-<script src="js/main.js" defer></script>
+<script src="js/plan-units.js?v=3165f6f5" defer></script>
+<script src="js/main.js?v=3eed9b19" defer></script>
 </body>
 </html>
